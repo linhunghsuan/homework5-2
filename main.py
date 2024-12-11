@@ -7,17 +7,20 @@ import matplotlib.pyplot as plt
 # Load and preprocess MNIST data
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 x_train, x_test = x_train / 255.0, x_test / 255.0  # Normalize the data
-x_train = x_train.reshape(-1, 28 * 28)  # Flatten the images
-x_test = x_test.reshape(-1, 28 * 28)
+x_train = x_train.reshape(-1, 28, 28, 1)  # Add channel dimension
+x_test = x_test.reshape(-1, 28, 28, 1)
 
-# Build the DNN model
+# Build the CNN model
 model = models.Sequential([
-    layers.InputLayer(input_shape=(28 * 28,)),
+    layers.InputLayer(input_shape=(28, 28, 1)),
+    layers.Conv2D(32, (3, 3), activation='relu'),
+    layers.MaxPooling2D(pool_size=(2, 2)),
+    layers.Conv2D(64, (3, 3), activation='relu'),
+    layers.MaxPooling2D(pool_size=(2, 2)),
+    layers.Flatten(),
     layers.Dense(128, activation='relu'),
     layers.Dropout(0.2),
-    layers.Dense(64, activation='relu'),
-    layers.Dropout(0.2),
-    layers.Dense(10, activation='softmax')  # 10 output classes for digits 0-9
+    layers.Dense(10, activation='softmax')
 ])
 
 # Compile the model
